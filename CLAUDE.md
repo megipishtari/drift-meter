@@ -28,12 +28,20 @@ and the whole site is meant to be readable by opening a file.
 ## Hard rules
 
 **1. Never hand-edit `drift-meter.html`.**
-It is a ~890 KB bundler output: a gzipped, base64-encoded React app inside a loader shell,
-plus inlined fonts. The real source is a separate file, `Drift Meter.dc.html`, which is
-**not in this repository** (see `SETUP-live-claude.md`). To change the instrument, edit that
-source, re-bundle, and replace `drift-meter.html` wholesale. Any attempt to patch the bundle
-in place — including a "small" string edit — corrupts it. If asked to change the instrument's
-behavior, say the source is not present rather than editing the artifact.
+It is a ~890 KB bundler output: a loader shell wrapping a `__bundler/manifest` (gzipped,
+base64-encoded dc-runtime and React) and a `__bundler/template` holding the page source, plus
+37 inlined woff2 fonts. Patching it in place — including a "small" string edit — corrupts it.
+
+The editable source is `Drift Meter.dc.html`, named in `SETUP-live-claude.md`. **No copy of it
+exists on disk**, but it is recoverable from the bundle: the `__bundler/template` script tag
+contains it as a JSON string. Decoding that yields ~167 KB of readable, commented source — the
+class methods, `REFLECT_ENDPOINT`, the case content. Its fonts and runtime are referenced by
+bundle UUID rather than by URL, so the recovered file reads and edits cleanly but is not a
+drop-in rebuild input without the tool that produced the bundle.
+
+To change the instrument: recover or locate the source, edit it, re-bundle, and replace
+`drift-meter.html` wholesale. If the bundler is not available, say so rather than editing the
+artifact.
 
 **2. The API key never touches the browser.**
 `api/reflect.js` reads `process.env.ANTHROPIC_API_KEY` server-side. Do not introduce a code
@@ -69,12 +77,16 @@ illustrative must say so on the page.
 - **Locally:** open the `.html` files in a browser. Nothing to install or serve.
   The live-Claude features need the deployed function; without it the page degrades to a
   static "available on request" state.
-- **Deploy:** Vercel serves both the static pages and `api/reflect.js` from
-  `https://drift-meter.vercel.app` — that is the endpoint URL compiled into the bundle and the
-  first entry in `ALLOWED_ORIGINS`. `ANTHROPIC_API_KEY` lives as a Vercel project environment
-  variable, never in the repo. A GitHub Pages copy is also referenced
-  (`mp7770.github.io/drift-meter/`). Pushing to `main` is the publish step — treat every push
-  as going live.
+- **Deploy:** two live hosts, both fed from `main`. Vercel serves the static pages and
+  `api/reflect.js` at `https://drift-meter.vercel.app` — that URL is compiled into the bundle
+  as `REFLECT_ENDPOINT` and is the first entry in `ALLOWED_ORIGINS`. GitHub Pages serves a
+  static copy at `https://megipishtari.github.io/drift-meter/`. `ANTHROPIC_API_KEY` lives as a
+  Vercel project environment variable, never in the repo. Pushing to `main` is the publish
+  step — treat every push as going live.
+- **Known defect (open):** `ALLOWED_ORIGINS` still lists `https://mp7770.github.io` — an old
+  username, now released, which 404s. `index.html` sets `og:url` to the same dead address. The
+  live Pages origin `https://megipishtari.github.io` is *not* on the list, so `allowOrigin()`
+  returns null and the live-Claude features 403 on the Pages copy. They work on Vercel.
 - **Cost:** the in-memory rate limiters in `reflect.js` are best-effort only; serverless
   instances are short-lived and parallel. The console spend cap is the real guarantee.
 
@@ -98,6 +110,7 @@ trace, not a finding"). Match this in any prose added to the site — including 
 
 ## Working practice
 
-Commits on `main` are mostly "Add files via upload", i.e. files pushed through the GitHub web
-interface rather than committed locally. Expect the working tree and `origin/main` to diverge
-in both directions; check `git status` and fetch before assuming local state is current.
+History before August 2026 is mostly "Add files via upload" — files pushed through the GitHub
+web interface. Work has moved to local commits, so that pattern should not continue; commit
+and push normally. `origin/main` may still be ahead of a given checkout, so fetch before
+assuming local state is current.
