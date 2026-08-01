@@ -69,9 +69,10 @@ illustrative must say so on the page.
 - **Locally:** open the `.html` files in a browser. Nothing to install or serve.
   The live-Claude features need the deployed function; without it the page degrades to a
   static "available on request" state.
-- **Deploy:** Vercel is connected to the GitHub repo and serves both the static pages and
-  `api/reflect.js` from `https://drift-meter.vercel.app`. `ANTHROPIC_API_KEY` is set as a
-  Vercel project environment variable. A GitHub Pages copy is also referenced
+- **Deploy:** Vercel serves both the static pages and `api/reflect.js` from
+  `https://drift-meter.vercel.app` — that is the endpoint URL compiled into the bundle and the
+  first entry in `ALLOWED_ORIGINS`. `ANTHROPIC_API_KEY` lives as a Vercel project environment
+  variable, never in the repo. A GitHub Pages copy is also referenced
   (`mp7770.github.io/drift-meter/`). Pushing to `main` is the publish step — treat every push
   as going live.
 - **Cost:** the in-memory rate limiters in `reflect.js` are best-effort only; serverless
