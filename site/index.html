@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Drift Meter — Megi Pishtari</title>
+<meta name="description" content="An experiment in evaluating the evaluator under AI assistance. Part of a research and editorial project on AI, oversight, and the fate of human judgment.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mp7770.github.io/drift-meter/">
+<meta property="og:site_name" content="Agential Drift Research Program">
+<meta property="og:title" content="The Drift Meter — Evaluating the Evaluator under AI assistance">
+<meta property="og:description" content="An interactive instrument and two essays on agential drift: what AI assistance changes in the person responsible for judging the answer.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Drift Meter — Evaluating the Evaluator under AI assistance">
+<meta name="twitter:description" content="An interactive instrument and two essays on agential drift and the fate of human judgment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #F0EEE6; color: #141413; font-family: 'IBM Plex Sans', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.5; }
+  ::selection { background: #2E5E4F; color: #fff; }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 96px 32px 88px; }
+
+  .kicker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #A39A88; margin-bottom: 32px; }
+
+  h1 { font-family: 'Newsreader', serif; font-weight: 500; font-size: 56px; line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 18px; }
+
+  .spine { font-family: 'Newsreader', serif; font-weight: 400; font-style: italic; font-size: 30px; line-height: 1.28; letter-spacing: -0.01em; color: #2E5E4F; margin: 0 0 32px; max-width: 22ch; }
+
+  .hero { font-size: 18px; line-height: 1.62; color: #2E2D27; margin: 0 0 18px; max-width: 54ch; text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+  .hero:last-of-type { margin-bottom: 36px; }
+  .hero .term { color: #234B3E; font-style: italic; }
+
+  .launch-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-bottom: 8px; }
+  .cta { display: inline-flex; align-items: center; gap: 10px; font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; font-weight: 500; color: #FBFAF7; background: #2E5E4F; border: none; padding: 16px 30px; cursor: pointer; text-decoration: none; transition: background .15s ease; }
+  .cta:hover { background: #234B3E; }
+  .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; line-height: 1.6; color: #A39A88; }
+
+  /* preview specimen */
+  .specimen { margin: 48px 0 0; background: #F7F5EE; border: 1px solid #E2DDD0; padding: 26px 28px 28px; }
+  .spec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .spec-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #8C8472; }
+  .legend { display: flex; gap: 18px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6B675E; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.ink { background: #2E2E2B; }
+  .dot.coral { background: #2E5E4F; }
+  .dim { margin-bottom: 18px; }
+  .dim:last-of-type { margin-bottom: 0; }
+  .dim-name { font-size: 13.5px; color: #36352F; margin-bottom: 8px; }
+  .bar-track { height: 7px; background: #E6E1D4; margin-bottom: 6px; overflow: hidden; }
+  .bar-track:last-child { margin-bottom: 0; }
+  .bar { height: 100%; }
+  .bar.ink { background: #2E2E2B; }
+  .bar.coral { background: #2E5E4F; }
+  .spec-caption { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; line-height: 1.6; color: #A39A88; margin: 22px 0 0; }
+
+  /* sections */
+  section { margin-top: 64px; padding-top: 38px; border-top: 1px solid #DCD7C9; }
+  .eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #8C8472; font-weight: 500; margin: 0 0 22px; }
+
+  .measure { font-family: 'Newsreader', serif; font-size: 22px; line-height: 1.5; color: #2E2D27; margin: 0; max-width: 40ch; }
+  .measure strong { font-weight: 500; color: #141413; }
+
+  /* the essay — set as writing */
+  p.essay { font-family: 'Newsreader', serif; font-size: 20px; line-height: 1.56; color: #25241F; margin: 0 0 22px; max-width: 40ch; text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+  p.essay:last-child { margin-bottom: 0; }
+
+  p.body { font-size: 16.5px; line-height: 1.64; color: #2E2D27; margin: 0 0 18px; max-width: 54ch; text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+  p.body strong { font-weight: 500; color: #1A1916; }
+  .term { color: #234B3E; font-style: italic; }
+
+  .foot { margin-top: 60px; padding-top: 24px; border-top: 1px solid #DCD7C9; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; line-height: 1.85; color: #9C9384; letter-spacing: 0.02em; }
+  .foot a { color: #6B675E; }
+
+  /* project index */
+  .index { display: flex; flex-direction: column; }
+  .idx-item { display: block; text-decoration: none; padding: 19px 0; border-top: 1px solid #E2DDD0; }
+  .idx-item:first-child { border-top: none; padding-top: 2px; }
+  .idx-title { font-family: 'Newsreader', serif; font-size: 23px; font-weight: 500; color: #1A1916; margin-bottom: 6px; transition: color .15s ease; }
+  .idx-item:hover .idx-title { color: #2E5E4F; }
+  .idx-desc { font-size: 15px; line-height: 1.55; color: #6B6358; max-width: 58ch; }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 64px 22px 64px; }
+    h1 { font-size: 42px; }
+    .spine { font-size: 24px; }
+    p.essay, .measure { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">Agential Drift Research Program &nbsp;·&nbsp; Experiment 01</div>
+    <h1>The Drift Meter</h1>
+    <p class="spine">Evaluating the evaluator under AI assistance</p>
+
+    <p class="hero">The Drift Meter is an experiment in evaluating the evaluator. It does not ask only whether AI improves an answer. It asks what AI assistance changes in the person responsible for judging the answer: their attention, confidence, assumptions, tolerance for ambiguity, and willingness to revise.</p>
+    <p class="hero">The underlying concept is <span class="term">agential drift</span>: the gradual weakening of evaluative independence through small, reasonable acts of delegation.</p>
+
+    <div class="launch-row">
+      <a class="cta" href="drift-meter.html">Launch the Drift Meter &rarr;</a>
+      <div class="meta">3-minute interactive prototype<br>runs entirely in your browser · nothing is sent or stored</div>
+    </div>
+    <p style="margin: 20px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #8C8472;">Or read the companion essay: <a href="essay.html" style="color: #234B3E; text-decoration: none; border-bottom: 1px solid #C2D6CB; padding-bottom: 1px;">Evaluating the Evaluator &rarr;</a></p>
+
+    <!-- a glimpse of the readout -->
+    <div class="specimen">
+      <div class="spec-head">
+        <div class="spec-label">A glimpse of the readout</div>
+        <div class="legend">
+          <span><i class="dot ink"></i> Without assistance</span>
+          <span><i class="dot coral"></i> With assistance</span>
+        </div>
+      </div>
+
+      <div class="dim">
+        <div class="dim-name">Assumptions interrogated</div>
+        <div class="bar-track"><div class="bar ink" style="width:84%"></div></div>
+        <div class="bar-track"><div class="bar coral" style="width:43%"></div></div>
+      </div>
+      <div class="dim">
+        <div class="dim-name">Evidence opened and read</div>
+        <div class="bar-track"><div class="bar ink" style="width:71%"></div></div>
+        <div class="bar-track"><div class="bar coral" style="width:39%"></div></div>
+      </div>
+      <div class="dim">
+        <div class="dim-name">Framing accepted as given</div>
+        <div class="bar-track"><div class="bar ink" style="width:31%"></div></div>
+        <div class="bar-track"><div class="bar coral" style="width:72%"></div></div>
+      </div>
+
+      <p class="spec-caption">Illustrative. Your own readout is generated from how you actually work through the review &mdash; not from whether your answer was &ldquo;right.&rdquo;</p>
+    </div>
+
+    <!-- what it measures -->
+    <section>
+      <div class="eyebrow">What it measures</div>
+      <p class="measure"><strong>Framing autonomy, ambiguity tolerance, evidence engagement, revision behavior, and confidence calibration</strong> &mdash; the same review completed in two conditions, once with AI assistance and once without it.</p>
+    </section>
+
+    <!-- why it matters — the essay -->
+    <section>
+      <div class="eyebrow">Why it matters</div>
+      <p class="essay">As AI systems become more capable, the human role often moves upstream: from execution to framing, monitoring, approval, and responsibility. That makes human judgment more important, not less. But it also makes judgment harder to evaluate.</p>
+      <p class="essay">A person may receive a better output while becoming less able to explain, challenge, or independently reconstruct the reasoning behind it. They may feel more confident while their evaluative range narrows. They may approve work without seeing what has changed.</p>
+      <p class="essay">The Drift Meter begins from that tension. It treats oversight as a human capacity, not only a governance process.</p>
+    </section>
+
+    <!-- larger project -->
+    <section>
+      <div class="eyebrow">The larger project</div>
+      <p class="body">At the institutional level, the question becomes one of <strong>evaluator integrity</strong> &mdash; structural, not moral: the intact capacity to frame, question, reject, revise, and take responsibility for AI-assisted work. The goal is not to discourage AI use. It is to help people and institutions adopt AI without quietly outsourcing the capacities they still need most.</p>
+    </section>
+
+    <!-- a note on method -->
+    <section>
+      <div class="eyebrow">A note on method</div>
+      <p class="body">This is a prototype, and it is built to claim only what it can observe. It does not score whether your decisions were right. It has not been run at scale, so it reports no cohort findings &mdash; an earlier version showed an invented cohort dashboard, and I removed it, because a piece about the costs of unearned confidence should not manufacture its own. What remains is a trace of one person&rsquo;s judgment across one short task, and the questions that trace raises.</p>
+    </section>
+
+    <!-- in this project -->
+    <section>
+      <div class="eyebrow">In this project</div>
+      <div class="index">
+        <a class="idx-item" href="drift-meter.html">
+          <div class="idx-title">The Drift Meter &rarr;</div>
+          <div class="idx-desc">An interactive instrument. Complete the same charity cost-effectiveness review with and without AI assistance, and see what changed in the texture of your judgment.</div>
+        </a>
+        <a class="idx-item" href="essay.html">
+          <div class="idx-title">Evaluating the Evaluator &rarr;</div>
+          <div class="idx-desc">A short companion essay on agential drift and what the prototype is built to make visible.</div>
+        </a>
+        <a class="idx-item" href="atrophy.html">
+          <div class="idx-title">The Atrophy of Judgment &rarr;</div>
+          <div class="idx-desc">The full essay on AI assistance, oversight, and the human capacities responsible use depends on.</div>
+        </a>
+      </div>
+      <p style="margin: 28px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.7; color: #A39A88;">Experiment 01 of the Agential Drift Research Program &mdash; a planned series of instruments and essays on how AI reshapes human judgment.</p>
+    </section>
+
+    <div class="foot">
+      Built by Megi Pishtari as part of a larger research and editorial project on AI, oversight, and the fate of human judgment. Built with Claude; the assistant's contributions are scripted in this shared version for portability, and a live-Claude version can be demonstrated on request.<br>
+      megipishtari@gmail.com
+    </div>
+  </div>
+</body>
+</html>
